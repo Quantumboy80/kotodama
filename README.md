@@ -46,11 +46,6 @@
 - Admin and user-created decks
 - Track study progress over time
 
-### 💎 Premium System
-- Tiered premium plans with Razorpay payment integration
-- Referral system with wallet rewards
-- Coupon and discount support
-
 ### 🔐 Authentication & Security
 - Google OAuth via Better Auth
 - Device fingerprinting and multi-device management
@@ -68,7 +63,6 @@
 | **CMS** | Sanity CMS (Headless) with Portable Text |
 | **AI** | Google Gemini AI with custom system prompts |
 | **Auth** | Better Auth (Google OAuth) |
-| **Payments** | Razorpay |
 | **Dev Tools** | Turbopack, ESLint, Prettier, Husky |
 
 ---
@@ -81,7 +75,6 @@
 - **PostgreSQL** database (local or cloud — [Neon](https://neon.tech) / [Supabase](https://supabase.com) for free)
 - **Google Cloud Console** project (for OAuth)
 - **Sanity** account (for CMS)
-- **Razorpay** account (for payments, optional for dev)
 
 ### Installation
 
@@ -125,10 +118,6 @@
    # Google Gemini AI
    GEMINI_API_KEY="your-gemini-api-key"
 
-   # Razorpay (optional for development)
-   RAZORPAY_KEY_ID="your-razorpay-key"
-   RAZORPAY_KEY_SECRET="your-razorpay-secret"
-   NEXT_PUBLIC_RAZORPAY_KEY_ID="your-razorpay-key"
 
    # Telegram Bot (optional - for admin notifications)
    TELEGRAM_BOT_TOKEN="your-telegram-bot-token"
