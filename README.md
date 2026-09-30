@@ -1,277 +1,263 @@
-## Kotodama : A Nextjs + Sanity based notes sharing platform.
+<div align="center">
 
-Welcome to Kotodama, a web platform designed for students to read and share college notes easily. Built with a modern tech stack, it ensures an easy-to-use, visually appealing, and responsive experience.
+# 📚 Kotodama
 
-![HeroSectionImage](https://i.postimg.cc/8PvmSp4y/localhost-3000.png)
+### AI-Powered Note Sharing Platform for Indian College Students
 
-### Features :
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?logo=tailwindcss)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-- Sanity CMS with Caching
-- Notes system, PYQ's, one shots
-- Quiz system (admin + user side)
-- Flashcards (admin + user side)
-- Premium purchase system, with history & upgrading the plan with razorpay
-- User profile management with on-boarding system
-- Referral system
-- wallet system
-- Coupon / Discount system
-- Ai Chat with custom agents based on the subject
-- Admin panel for managing the platform and more!
+**Kotodama** is a full-stack SaaS platform where college students across India can share notes, join university communities, take quizzes, study with flashcards, and chat with AI — all in one place.
 
-### Contributors
+[Live Demo](#) · [Report Bug](https://github.com/Quantumboy80/kotodama/issues) · [Request Feature](https://github.com/Quantumboy80/kotodama/issues)
 
-<a href="https://github.com/ramxcodes/Kotodama/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ramxcodes/Kotodama" />
-</a>
+</div>
 
-### Tech Stack
+---
 
-**Frontend:**
+## ✨ Features
 
-- **Next.js 15.3.3** - React framework with App Router
-- **React 19** - UI library with latest features
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **Motion** - Animation library
-- **shadcn/ui** - Pre-built components
-- **Lenis** - Smooth scroll library
-- **React Hook Form** - Form management with Zod validation
+### 📝 Notes System
+- Upload, share, and discover notes across universities and degree streams
+- Filter by university, degree, year, and semester
+- Community-driven content with upvotes and engagement
 
-**Backend & Database:**
+### 🏫 University Communities
+- **25+ Indian universities** pre-loaded (IITs, NITs, BITS, VTU, Anna University, AKTU, RGPV, and more)
+- Users can **register their own college** — visible to all users platform-wide
+- One-click join to university communities organized by degree stream (B.Tech CSE, IT, ECE, BCA, MCA, etc.)
+- Search and discover communities across India
 
-- **Prisma** - Database ORM with PostgreSQL
-- **Better Auth** - Modern authentication system
-- **Next.js API Routes** - Server-side endpoints
+### 🤖 AI Chat
+- Powered by **Google Gemini AI**
+- Subject-specific AI agents for targeted academic help
+- Context-aware conversations for better study assistance
 
-**Content Management:**
+### 📋 Quiz System
+- Admin-created quizzes with bulk import support
+- Timed quiz sessions with countdown
+- Score breakdown, progress tracking, and leaderboard
 
-- **Sanity CMS** - Headless content management
-- **Portable Text** - Rich text content
-- **next-sanity** - Sanity integration for Next.js
+### 🃏 Flashcards
+- Spaced repetition study cards
+- Admin and user-created decks
+- Track study progress over time
 
-**AI & Chat:**
+### 💎 Premium System
+- Tiered premium plans with Razorpay payment integration
+- Referral system with wallet rewards
+- Coupon and discount support
 
-- **Google Gemini AI** - AI chat functionality
-- **Custom AI agents** - Subject-specific chatbots
+### 🔐 Authentication & Security
+- Google OAuth via Better Auth
+- Device fingerprinting and multi-device management
+- Secure session handling
 
-**Payment & Premium:**
+---
 
-- **Razorpay** - Payment gateway
-- **Hierarchical tier system** - Premium access control
+## 🛠️ Tech Stack
 
-**Development Tools:**
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Motion, Lenis |
+| **Backend** | Next.js API Routes, Server Actions, Prisma ORM |
+| **Database** | PostgreSQL |
+| **CMS** | Sanity CMS (Headless) with Portable Text |
+| **AI** | Google Gemini AI with custom system prompts |
+| **Auth** | Better Auth (Google OAuth) |
+| **Payments** | Razorpay |
+| **Dev Tools** | Turbopack, ESLint, Prettier, Husky |
 
-- **Bun** - Package manager and runtime
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **Husky** - Git hooks
-- **Turbopack** - Fast bundler
+---
 
-## Contributing & Installation
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 18+ or **Bun**
+- **PostgreSQL** database (local or cloud — [Neon](https://neon.tech) / [Supabase](https://supabase.com) for free)
+- **Google Cloud Console** project (for OAuth)
+- **Sanity** account (for CMS)
+- **Razorpay** account (for payments, optional for dev)
 
 ### Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/ramxcodes/Kotodama.git
-
-    # For Windows
-
-    ren Kotodama kotodama
-
-    # For Mac/Linux
-
-    mv Kotodama kotodama
-
-    cd kotodama
+   git clone https://github.com/Quantumboy80/kotodama.git
+   cd kotodama
    ```
 
 2. **Install dependencies**
 
-```bash
-bun install
-```
+   ```bash
+   npm install
+   # or
+   bun install
+   ```
 
-3. **Environment Setup**
-   Create a `.env.local` file with the following variables:
+3. **Set up environment variables**
+
+   Create a `.env` file in the root directory:
 
    ```env
    # Database
-   DATABASE_URL="postgresql://..."
-
-   # Sanity
-   NEXT_PUBLIC_SANITY_PROJECT_ID="your_project_id"
-   NEXT_PUBLIC_SANITY_DATASET="production"
-   SANITY_API_TOKEN="your_api_token"
+   DATABASE_URL="postgresql://user:password@localhost:5432/kotodama"
 
    # Better Auth
-   BETTER_AUTH_SECRET="your_auth_secret"
+   BETTER_AUTH_SECRET="your-random-secret-key"
    BETTER_AUTH_URL="http://localhost:3000"
+   NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
-   # Razorpay
-   RAZORPAY_KEY_ID="your_razorpay_key"
-   RAZORPAY_KEY_SECRET="your_razorpay_secret"
+   # Google OAuth
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
 
-   <!-- Check .env.example for all the vars -->
+   # Sanity CMS
+   NEXT_PUBLIC_SANITY_PROJECT_ID="your-sanity-project-id"
+   NEXT_PUBLIC_SANITY_DATASET="production"
+   SANITY_API_TOKEN="your-sanity-api-token"
 
+   # Google Gemini AI
+   GEMINI_API_KEY="your-gemini-api-key"
+
+   # Razorpay (optional for development)
+   RAZORPAY_KEY_ID="your-razorpay-key"
+   RAZORPAY_KEY_SECRET="your-razorpay-secret"
+   NEXT_PUBLIC_RAZORPAY_KEY_ID="your-razorpay-key"
+
+   # Telegram Bot (optional - for admin notifications)
+   TELEGRAM_BOT_TOKEN="your-telegram-bot-token"
+   TELEGRAM_CHANNEL_ID="your-channel-id"
    ```
 
-3.1 How to get Telegram Bot Token & Channel URL ->
-**Telegram Bot Setup:**
-
-- Create a new bot via [BotFather](https://t.me/BotFather) on Telegram and copy your bot token.
-- Add your bot to your channel and set it as an admin.
-- Get your channel id from Rose Bot.
-- For a step-by-step guide, watch this video:  
-   [Telegram Bot Setup Tutorial](github/TG-BOT.mp4)
-- Store your bot token and channel URL's in the `.env` file as needed.
-
-4. **Database Setup**
+4. **Set up the database**
 
    ```bash
-   bun prisma migrate dev
-   bun prisma generate
+   npx prisma db push
+   npx prisma generate
    ```
 
-5. **Start development server**
+5. **Start the development server**
 
    ```bash
+   npm run dev
+   # or
    bun dev
    ```
 
-6. **Access Sanity Studio**
-   Visit `http://localhost:3000/studio` for content management
+6. **Open your browser** at [http://localhost:3000](http://localhost:3000)
 
-### Folder Structure
+7. **Access Sanity Studio** at [http://localhost:3000/studio](http://localhost:3000/studio) for content management
+
+---
+
+## 📁 Project Structure
 
 ```
 src/
 ├── app/                          # Next.js App Router
 │   ├── (admin)/                  # Admin dashboard routes
 │   ├── (auth)/                   # Authentication pages
-│   ├── (modals)/                 # Modal routes
-│   ├── (staticPages)/            # Static pages
+│   ├── (staticPages)/            # Static pages (about, privacy, terms)
 │   ├── (user)/                   # User dashboard routes
-│   ├── api/                      # API endpoints
-│   │   ├── ai/                   # AI chat endpoints
-│   │   ├── auth/                 # Authentication API
-│   │   ├── flashcard/            # Flashcard actions
-│   │   ├── premium/              # Premium & payment API
-│   │   └── user/                 # User management API
-│   └── global.css                # Global styles
-├── cache/                        # Caching utilities
-│   ├── admin.ts                  # Admin data caching
-│   ├── notes.ts                  # Notes caching
-│   ├── premium.ts                # Premium data caching
-│   └── user.ts                   # User data caching
+│   │   ├── ai/                   # AI chat page
+│   │   ├── notes/                # Notes, communities, personal notes
+│   │   ├── profile/              # User profile
+│   │   └── quiz/                 # Quiz system
+│   └── api/                      # API endpoints
 ├── components/                   # React components
-│   ├── admin/                    # Admin dashboard components
-│   ├── ai/                       # AI chat components
-│   ├── auth/                     # Authentication components
-│   ├── chat/                     # Chat interface
-│   ├── core/                     # Core UI components
+│   ├── admin/                    # Admin dashboard
+│   ├── ai/                       # AI chat interface
+│   ├── auth/                     # Auth & onboarding
+│   ├── core/                     # Core layout (navbar, footer, sidebar)
 │   ├── flashcard/                # Flashcard components
-│   ├── landing/                  # Landing page components
-│   ├── note/                     # Note display components
-│   ├── premium/                  # Premium & payment components
-│   ├── profile/                  # User profile components
-│   ├── quiz/                     # Quiz system components
-│   └── ui/                       # shadcn/ui components
+│   ├── landing/                  # Landing page
+│   ├── note/                     # Notes & communities UI
+│   ├── premium/                  # Premium & payment
+│   ├── quiz/                     # Quiz components
+│   └── ui/                       # shadcn/ui primitives
 ├── dal/                          # Data Access Layer
 │   ├── ai/                       # AI chat queries
-│   ├── coupon/                   # Coupon & discount queries
-│   ├── flashcard/                # Flashcard data access
-│   ├── note/                     # Notes queries
-│   ├── premium/                  # Premium system queries
-│   ├── quiz/                     # Quiz system queries
-│   ├── referral/                 # Referral system queries
-│   └── user/                     # User management queries
+│   ├── community/                # Community & university actions
+│   ├── note/                     # Note CRUD
+│   ├── premium/                  # Premium system
+│   ├── quiz/                     # Quiz system
+│   ├── referral/                 # Referral system
+│   └── user/                     # User management & onboarding
 ├── hooks/                        # Custom React hooks
-│   ├── use-audio-recording.ts    # Audio recording hook
-│   ├── use-debounce.ts           # Debounce utility
-│   ├── use-mobile.ts             # Mobile detection
-│   └── use-scroll-progress.ts    # Scroll progress tracking
-├── lib/                          # Utility libraries
-│   ├── auth/                     # Authentication utilities
-│   ├── db/                       # Database utilities
-│   ├── razorpay/                 # Payment integration
-│   ├── search/                   # Search functionality
-│   └── user/                     # User utilities
-├── sanity/                       # Sanity CMS configuration
-├── types/                        # TypeScript type definitions
-└── utils/                        # Utility functions
-    ├── academic-config.ts        # Academic hierarchy config
-    ├── ai-system-prompt.ts       # AI system prompts
-    ├── config.ts                 # App configuration
-    ├── constant.ts               # Application constants
-    └── helpers.ts                # Helper functions
+├── lib/                          # Core libraries (auth, db, payments)
+├── sanity/                       # Sanity CMS schemas & config
+├── utils/                        # Utilities & config
+│   ├── academic-config.ts        # University/degree/semester hierarchy
+│   ├── ai-system-prompt.ts       # AI agent system prompts
+│   └── config.ts                 # App configuration
+└── types/                        # TypeScript definitions
 ```
 
-### Naming Conventions
+---
 
-**Files & Folders:**
+## 🌐 Deployment
 
-- Use `kebab-case` for file and folder names
-- Component files use `PascalCase` (e.g., `UserProfile.tsx`)
-- Utility files use `kebab-case` (e.g., `user-profile.ts`)
-- API routes use `kebab-case` folders with `route.ts` files
+### Vercel (Recommended)
 
-**Components:**
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com) → Import your `kotodama` repository
+3. Add all environment variables from your `.env` file
+4. Set `DATABASE_URL` to a production PostgreSQL (e.g., [Neon](https://neon.tech))
+5. Deploy!
 
-- React components use `PascalCase`
-- Component props interfaces end with `Props`
-- Custom hooks start with `use` prefix
+### Post-Deployment
 
-**Database & API:**
+```bash
+# Run against your production database to sync schema
+npx prisma db push
+```
 
-- Database models use `PascalCase` (Prisma convention)
-- API endpoints use `camelCase` for functions
-- Enum values use `UPPER_SNAKE_CASE`
+---
 
-**Variables & Functions:**
+## 🎓 Supported Universities
 
-- Use `camelCase` for variables and functions
-- Constants use `UPPER_SNAKE_CASE`
-- Boolean variables start with `is`, `has`, `can`, `should`
+Kotodama comes pre-loaded with 25+ Indian universities including:
 
-**Academic Hierarchy:**
+> IIT Bombay, IIT Delhi, IIT Madras, IIT Kharagpur, NIT Trichy, NIT Surathkal, BITS Pilani, Delhi University, SPPU, Mumbai University, VTU, Anna University, AKTU, RGPV, Jadavpur University, Calcutta University, MAKAUT, SRM, VIT Vellore, Manipal, Amity, Thapar, Chandigarh University, and more.
 
-- University: `MEDICAPS`, `IPS`
-- Degree: `BTECH_CSE`, `BTECH_IT`
-- Year: `FIRST_YEAR`, `SECOND_YEAR`, etc.
-- Semester: `FIRST_SEMESTER`, `SECOND_SEMESTER`, etc.
+**Don't see your college?** Users can register any college/university directly from the platform — it becomes available to all users instantly.
 
-### Contribution
+---
 
-1. **Fork the repository** and clone your fork
-2. **Make your contribution** and raise PR.
-3. **Follow the coding standards**:
-   - Use TypeScript for all new code
-   - Follow the established folder structure
-   - Add proper error handling
-   - Include loading and error states for UI components
-4. **Database Changes**:
-   - Create migrations for schema changes: `bun prisma migrate dev --name your_migration_name`
-5. **Testing**:
-   - Test your changes locally
-   - Ensure all existing functionality works
-6. **Commit Guidelines**:
-   - Use conventional commits: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
-   - Write clear, descriptive commit messages
-7. **Submit a Pull Request**:
-   - Provide a clear description of changes
-   - Link any related issues
-   - Include screenshots for UI changes
+## 📜 License
 
-**Development Guidelines:**
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
-- Use server actions for data mutations
-- Implement proper caching strategies
-- Follow the established DAL (Data Access Layer) pattern
-- Use Zod for data validation
-- Implement proper error boundaries
-- Follow accessibility best practices
-- Optimize for performance and SEO
+---
 
+## 🤝 Contributing
 
+Contributions are welcome! Here's how:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Coding Standards
+- Use TypeScript for all new code
+- Follow the existing DAL (Data Access Layer) pattern for data mutations
+- Use Zod for validation, React Hook Form for forms
+- Use conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`)
+
+---
+
+<div align="center">
+
+**Built with ❤️ for Indian college students**
+
+[⬆ Back to Top](#-kotodama)
+
+</div>
