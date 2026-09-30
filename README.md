@@ -10,6 +10,12 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?logo=tailwindcss)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=js,ts,html,css,bootstrap,react,nextjs,nodejs,bun,postgres,prisma,docker,gcp,git,github,vscode;theme=dark" alt="My Skills" />
+  </a>
+</p>
+
 **Kotodama** is a full-stack SaaS platform where college students across India can share notes, join university communities, take quizzes, study with flashcards, and chat with AI — all in one place.
 
 [Live Demo](#) · [Report Bug](https://github.com/Quantumboy80/kotodama/issues) · [Request Feature](https://github.com/Quantumboy80/kotodama/issues)
