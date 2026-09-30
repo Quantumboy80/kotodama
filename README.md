@@ -189,6 +189,1326 @@ src/
 ```
 
 ---
+# 🏗️ System Architecture
+
+Kotodama follows a modular full-stack architecture built around **Next.js**, **React**, **TypeScript**, **Prisma**, **PostgreSQL**, **Better Auth**, **Google Gemini**, and **Sanity CMS**.
+
+The system separates the presentation layer, application logic, data access, database, and external services so that individual modules can be developed and maintained independently.
+
+---
+
+## High-Level Design (HLD)
+
+```mermaid
+flowchart TB
+
+    U[Student / User]
+
+    subgraph CLIENT["Presentation Layer"]
+        UI[Next.js App Router]
+        RC[React Components]
+        UI_LIB[shadcn/ui + Tailwind CSS]
+    end
+
+    subgraph APP["Application Layer"]
+        ROUTES[Server Actions / API Routes]
+        AUTH[Authentication & Authorization]
+        VALIDATION[Input Validation]
+        DAL[Data Access Layer]
+    end
+
+    subgraph DOMAIN["Domain Modules"]
+        NOTES[Notes & Communities]
+        QUIZ[Quiz Engine]
+        FLASH[Flashcard Engine]
+        AI[AI Chat Service]
+        USER[User Management]
+    end
+
+    subgraph DATA["Data Layer"]
+        PRISMA[Prisma ORM]
+        DB[(PostgreSQL)]
+    end
+
+    subgraph EXT["External Services"]
+        GOOGLE[Google OAuth]
+        GEMINI[Google Gemini]
+        SANITY[Sanity CMS]
+    end
+
+    U --> UI
+    UI --> RC
+    RC --> ROUTES
+
+    ROUTES --> AUTH
+    ROUTES --> VALIDATION
+    ROUTES --> DAL
+
+    DAL --> NOTES
+    DAL --> QUIZ
+    DAL --> FLASH
+    DAL --> AI
+    DAL --> USER
+
+    AUTH --> GOOGLE
+
+    NOTES --> PRISMA
+    QUIZ --> PRISMA
+    FLASH --> PRISMA
+    USER --> PRISMA
+
+    AI --> GEMINI
+
+    PRISMA --> DB
+
+    UI -. Content .-> SANITY
+```
+
+### Architecture Layers
+
+| Layer | Responsibility |
+| ---------------------- | -------------------------------------------------------------- |
+| **Presentation Layer** | UI, pages, forms, components and user interactions |
+| **Application Layer** | Authentication, authorization, validation and request handling |
+| **Domain Layer** | Notes, communities, quizzes, flashcards and AI functionality |
+| **Data Access Layer** | Centralized database operations |
+| **Data Layer** | Prisma ORM and PostgreSQL |
+| **External Services** | Google OAuth, Gemini AI and Sanity CMS |
+
+---
+
+# 🔄 Request / Data Flow
+
+A typical authenticated request follows the following flow:
+
+```text
+User
+  │
+  ▼
+React / Next.js UI
+  │
+  ▼
+Server Action / API Route
+  │
+  ├── Validate Input
+  │
+  ├── Authenticate User
+  │
+  └── Authorize Operation
+          │
+          ▼
+      Domain Logic
+          │
+          ▼
+      Data Access Layer
+          │
+          ▼
+        Prisma ORM
+          │
+          ▼
+       PostgreSQL
+          │
+          ▼
+        Response
+          │
+          ▼
+        Next.js UI
+```
+
+This separation prevents UI components from directly accessing the database and keeps business logic independent from the presentation layer.
+
+---
+
+# 🧩 Low-Level Design (LLD)
+
+## Layered Design
+
+```mermaid
+flowchart LR
+
+    VIEW["React / Next.js Components"]
+
+    ACTION["Server Actions / API Routes"]
+
+    SERVICE["Business / Domain Logic"]
+
+    DAL["Data Access Layer"]
+
+    ORM["Prisma ORM"]
+
+    DB[("PostgreSQL")]
+
+    VIEW --> ACTION
+    ACTION --> SERVICE
+    SERVICE --> DAL
+    DAL --> ORM
+    ORM --> DB
+```
+
+## 1. Presentation Layer
+
+The presentation layer is responsible for:
+
+- Rendering pages
+- Handling user interactions
+- Forms and validation feedback
+- Loading and error states
+- Displaying notes
+- Displaying quizzes and results
+- Flashcard interfaces
+- AI chat interface
+- Community interfaces
+
+The project follows a modular component structure:
+
+```text
+src/
+├── app/
+├── components/
+│   ├── admin/
+│   ├── ai/
+│   ├── auth/
+│   ├── core/
+│   ├── flashcard/
+│   ├── landing/
+│   ├── note/
+│   ├── quiz/
+│   └── ui/
+```
+
+---
+
+## 2. Application Layer
+
+The application layer receives requests from the frontend and coordinates the required operations.
+
+Its responsibilities include:
+
+- Authentication
+- Authorization
+- Input validation
+- Calling business logic
+- Calling the Data Access Layer
+- Returning responses to the UI
+
+A typical operation looks like:
+
+```text
+Create Note
+    │
+    ▼
+Server Action / API
+    │
+    ▼
+Validate Input
+    │
+    ▼
+Check Authentication
+    │
+    ▼
+Check Authorization
+    │
+    ▼
+Data Access Layer
+    │
+    ▼
+Prisma
+    │
+    ▼
+PostgreSQL
+```
+
+---
+
+# 3. Data Access Layer (DAL)
+
+Kotodama uses a dedicated **Data Access Layer** to keep database operations separate from UI and business logic.
+
+```text
+src/dal/
+
+├── ai/
+├── community/
+├── note/
+├── quiz/
+├── user/
+└── ...
+```
+
+The DAL acts as an abstraction between the application and Prisma.
+
+### Without DAL
+
+```text
+Component
+    │
+    ▼
+Prisma
+    │
+    ▼
+Database
+```
+
+### With DAL
+
+```text
+Component
+    │
+    ▼
+Server Action / API
+    │
+    ▼
+DAL
+    │
+    ▼
+Prisma
+    │
+    ▼
+Database
+```
+
+### Benefits
+
+- Separation of concerns
+- Centralized database queries
+- Reduced code duplication
+- Easier testing
+- Easier database migrations
+- Better authorization control
+- Cleaner business logic
+
+---
+
+# 🗄️ Database Design
+
+Kotodama uses **PostgreSQL** as its relational database and **Prisma ORM** for type-safe database access.
+
+The database contains entities for:
+
+- Users
+- User profiles
+- Authentication sessions
+- Universities
+- Communities
+- Community members
+- Notes
+- Quizzes
+- Questions
+- Question options
+- Quiz attempts
+- Quiz answers
+- Flashcard sets
+- Flashcard items
+- Flashcard visits
+- AI chats
+- AI chat messages
+
+---
+
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+
+    USER ||--o| USER_PROFILE : has
+    USER ||--o{ SESSION : creates
+    USER ||--o{ ACCOUNT : owns
+    USER ||--o{ DEVICE_FINGERPRINT : uses
+
+    USER ||--o{ NOTE : creates
+    USER ||--o{ COMMUNITY_MEMBER : joins
+    USER ||--o{ QUIZ_ATTEMPT : makes
+    USER ||--o{ FLASHCARD_VISIT : records
+    USER ||--o{ CHAT : owns
+
+    UNIVERSITY ||--o{ COMMUNITY : contains
+    UNIVERSITY ||--o{ NOTE : associated_with
+
+    COMMUNITY ||--o{ COMMUNITY_MEMBER : has
+    COMMUNITY ||--o{ NOTE : contains
+
+    QUIZ ||--o{ QUESTION : contains
+    QUIZ ||--o{ QUIZ_ATTEMPT : receives
+
+    QUESTION ||--o{ QUESTION_OPTION : contains
+    QUESTION ||--o{ QUIZ_ANSWER : answered_in
+
+    QUIZ_ATTEMPT ||--o{ QUIZ_ANSWER : contains
+    QUESTION_OPTION ||--o{ QUIZ_ANSWER : selected_as
+
+    FLASHCARD_SET ||--o{ FLASHCARD_ITEM : contains
+    FLASHCARD_SET ||--o{ FLASHCARD_VISIT : tracked_by
+    FLASHCARD_ITEM ||--o{ FLASHCARD_VISIT : visited
+
+    CHAT ||--o{ CHAT_MESSAGE : contains
+
+    USER {
+        string id PK
+        string name
+        string email UK
+        string role
+        boolean isOnboarded
+        boolean isBlocked
+        datetime createdAt
+    }
+
+    USER_PROFILE {
+        string id PK
+        string userId FK
+        string firstName
+        string lastName
+        string phoneNumber UK
+        enum university
+        enum degree
+        enum year
+        enum semester
+    }
+
+    UNIVERSITY {
+        string id PK
+        string name UK
+        string label
+    }
+
+    COMMUNITY {
+        string id PK
+        string universityId FK
+        string name
+        string description
+        string degree
+    }
+
+    COMMUNITY_MEMBER {
+        string id PK
+        string communityId FK
+        string userId FK
+        enum role
+    }
+
+    NOTE {
+        string id PK
+        string authorId FK
+        string communityId FK
+        string universityId FK
+        string title
+        string slug UK
+        string content
+        string pdfUrl
+        string type
+        string subject
+    }
+
+    QUIZ {
+        string id PK
+        string title
+        string subject
+        enum university
+        enum degree
+        enum year
+        enum semester
+        int timeLimit
+        boolean isPublished
+    }
+
+    QUESTION {
+        string id PK
+        string quizId FK
+        string question
+        string explanation
+        int order
+    }
+
+    QUESTION_OPTION {
+        string id PK
+        string questionId FK
+        string text
+        boolean isCorrect
+        int order
+    }
+
+    QUIZ_ATTEMPT {
+        string id PK
+        string userId FK
+        string quizId FK
+        int score
+        int totalMarks
+        decimal accuracy
+        int timeTaken
+        enum status
+    }
+
+    QUIZ_ANSWER {
+        string id PK
+        string attemptId FK
+        string questionId FK
+        string selectedOptionId FK
+        boolean isCorrect
+        int marksAwarded
+        int timeTaken
+    }
+
+    FLASHCARD_SET {
+        string id PK
+        string title
+        string description
+        string subject
+        enum university
+        enum degree
+        enum year
+        enum semester
+    }
+
+    FLASHCARD_ITEM {
+        string id PK
+        string setId FK
+        string front
+        string back
+        int order
+    }
+
+    FLASHCARD_VISIT {
+        string id PK
+        string userId FK
+        string setId FK
+        string cardId FK
+        datetime visitedAt
+    }
+
+    CHAT {
+        string id PK
+        string userId FK
+        string university
+        string degree
+        string year
+        string semester
+        string subject
+        string name
+    }
+
+    CHAT_MESSAGE {
+        string id PK
+        string chatId FK
+        enum role
+        string content
+        string model
+        datetime createdAt
+    }
+```
+
+---
+
+# 🧠 Thinking Logic Behind the System
+
+Kotodama is designed as an **integrated academic learning ecosystem**, rather than a collection of independent features.
+
+The core idea is to maintain a common academic context across the platform:
+
+```text
+University
+     │
+     ▼
+Degree
+     │
+     ▼
+Year
+     │
+     ▼
+Semester
+     │
+     ▼
+Subject
+```
+
+This context can then be reused by different modules.
+
+```text
+                       USER
+                         │
+         ┌────────────────┼────────────────┐
+         │                │                │
+         ▼                ▼                ▼
+     COMMUNITY         NOTES              AI
+         │                                 │
+         │                                 │
+         ▼                                 ▼
+     ACADEMIC                         CHAT HISTORY
+      CONTEXT                              │
+         │                                 │
+    ┌────┼────┐                            │
+    │    │    │                            ▼
+    ▼    ▼    ▼                      PERSONALIZED
+  QUIZ FLASHCARD                       ASSISTANCE
+    │      │
+    ▼      ▼
+ PROGRESS PROGRESS
+```
+
+The objective is to allow a student to move naturally between:
+
+```text
+Learning Material
+       ↓
+Community
+       ↓
+Notes
+       ↓
+AI Assistance
+       ↓
+Practice
+       ↓
+Quiz
+       ↓
+Revision
+       ↓
+Flashcards
+```
+
+---
+
+# 🔐 Authentication Flow
+
+Kotodama uses **Better Auth** with **Google OAuth**.
+
+```mermaid
+sequenceDiagram
+
+    actor User
+    participant UI as Next.js UI
+    participant Auth as Better Auth
+    participant Google as Google OAuth
+    participant DB as PostgreSQL
+
+    User->>UI: Click "Continue with Google"
+    UI->>Auth: Start authentication
+    Auth->>Google: OAuth request
+    Google-->>Auth: Authorization response
+    Auth->>DB: Create / Update User
+    Auth->>DB: Create Account + Session
+    Auth-->>UI: Authenticated Session
+    UI-->>User: Open Dashboard
+```
+
+### Authentication Logic
+
+```text
+User
+  │
+  ▼
+Google OAuth
+  │
+  ▼
+Better Auth
+  │
+  ├── Create / Update User
+  │
+  ├── Create Account
+  │
+  └── Create Session
+          │
+          ▼
+       PostgreSQL
+          │
+          ▼
+     Authenticated User
+```
+
+The application therefore does not need to implement OAuth itself.
+
+---
+
+# 📝 Notes System
+
+The Notes system supports both personal and community-oriented academic notes.
+
+A note can contain information such as:
+
+- Author
+- University
+- Community
+- Degree
+- Year
+- Semester
+- Subject
+- Title
+- Content
+- PDF/document URL
+
+The `communityId` can be optional, allowing the same `Note` entity to support different contexts.
+
+## Notes Flow
+
+```mermaid
+flowchart TD
+
+    A[User Creates Note]
+
+    A --> B{Select Visibility}
+
+    B -->|Personal| C[No Community]
+    B -->|Community| D[Select Community]
+
+    C --> E[Validate Note]
+    D --> E
+
+    E --> F[Authorization Check]
+    F --> G[Create Note]
+    G --> H[Prisma]
+    H --> I[(PostgreSQL)]
+
+    I --> J[Return Note]
+    J --> K[Update UI]
+```
+
+### Design Reasoning
+
+Instead of maintaining separate tables:
+
+```text
+PersonalNote
+CommunityNote
+```
+
+the system uses a single:
+
+```text
+Note
+```
+
+with an optional:
+
+```text
+communityId
+```
+
+This reduces duplication and simplifies querying.
+
+---
+
+# 🏫 University & Community Logic
+
+The community hierarchy is:
+
+```text
+University
+    │
+    └── Community
+            │
+            ├── Members
+            │
+            └── Notes
+```
+
+A community represents an academic group associated with a university and degree.
+
+```text
+University
+    │
+    ▼
+Degree
+    │
+    ▼
+Community
+    │
+    ├── Student 1
+    ├── Student 2
+    ├── Student 3
+    └── Notes
+```
+
+## Joining a Community
+
+```text
+User
+ │
+ ▼
+Select University
+ │
+ ▼
+Select Degree
+ │
+ ▼
+Find Community
+ │
+ ▼
+Check Existing Membership
+ │
+ ▼
+Create CommunityMember
+ │
+ ▼
+User becomes Community Member
+```
+
+Community membership can support different roles:
+
+```text
+MEMBER
+MODERATOR
+CREATOR
+```
+
+This allows permissions to be handled at the community level.
+
+---
+
+# 🤖 AI Chat Architecture
+
+Kotodama integrates **Google Gemini** for AI-powered academic assistance.
+
+The database separates a conversation from its individual messages:
+
+```text
+Chat
+ │
+ ├── User Message
+ │
+ ├── Assistant Message
+ │
+ ├── User Message
+ │
+ └── Assistant Message
+```
+
+The `Chat` entity also stores academic context:
+
+```text
+University
+Degree
+Year
+Semester
+Subject
+```
+
+This allows the AI system to understand the student's academic context.
+
+---
+
+## AI Request Flow
+
+```mermaid
+sequenceDiagram
+
+    actor Student
+    participant UI as AI Chat UI
+    participant API as Next.js Server
+    participant DB as PostgreSQL
+    participant AI as Gemini
+
+    Student->>UI: Enter Question
+
+    UI->>API: Send Message + Chat ID
+
+    API->>API: Authenticate User
+    API->>API: Validate Request
+
+    API->>DB: Load Chat Context
+    DB-->>API: Previous Messages
+
+    API->>DB: Save User Message
+
+    API->>AI: Send Context + Question
+
+    AI-->>API: Generate Response
+
+    API->>DB: Save Assistant Message
+
+    API-->>UI: Return Response
+
+    UI-->>Student: Display AI Answer
+```
+
+### AI Design Principle
+
+The AI model should **not be responsible for application state**.
+
+PostgreSQL remains the source of truth for:
+
+```text
+Users
+Chats
+Messages
+Academic Context
+```
+
+Gemini is responsible for:
+
+```text
+Understanding
+     ↓
+Reasoning
+     ↓
+Response Generation
+```
+
+This also makes it possible to replace the AI provider in the future without redesigning the entire application.
+
+---
+
+# 📋 Quiz System
+
+The quiz system follows a hierarchical structure:
+
+```text
+Quiz
+ │
+ ├── Question
+ │      │
+ │      └── QuestionOption
+ │
+ └── QuizAttempt
+          │
+          └── QuizAnswer
+```
+
+Each quiz can contain:
+
+- Questions
+- Multiple options
+- Correct answers
+- Explanations
+- Time limits
+- Academic metadata
+
+Each attempt can store:
+
+- Score
+- Total marks
+- Accuracy
+- Time taken
+- Attempt status
+- Individual answers
+
+---
+
+## Quiz Flow
+
+```mermaid
+flowchart TD
+
+    A[Student Selects Quiz]
+
+    A --> B[Load Quiz]
+    B --> C[Load Questions]
+    C --> D[Generate Randomization]
+
+    D --> E[Create QuizAttempt]
+
+    E --> F[Start Timer]
+
+    F --> G[Display Question]
+
+    G --> H[Student Selects Option]
+
+    H --> I[Record Answer]
+
+    I --> J{More Questions?}
+
+    J -->|Yes| G
+    J -->|No| K[Calculate Score]
+
+    K --> L[Calculate Accuracy]
+    L --> M[Store Quiz Answers]
+    M --> N[Complete Quiz Attempt]
+    N --> O[Display Result]
+```
+
+### Quiz Attempt States
+
+```text
+IN_PROGRESS
+      │
+      ├──────────────► COMPLETED
+      │
+      ├──────────────► ABANDONED
+      │
+      └──────────────► TIME_UP
+```
+
+---
+
+# 🎲 Quiz Randomization
+
+The quiz system can store randomization seeds for questions and options.
+
+Instead of relying only on client-side randomization:
+
+```text
+Quiz
+ │
+ ├── questionSeed
+ └── optionSeed
+```
+
+the ordering can be reproduced for a particular attempt.
+
+This is useful for:
+
+- Maintaining consistent ordering
+- Reconstructing an attempt
+- Handling page refreshes
+- Reviewing previous attempts
+- Avoiding inconsistent question sequences
+
+---
+
+# 🃏 Flashcard System
+
+Flashcards are organized into sets.
+
+```text
+FlashcardSet
+      │
+      ├── FlashcardItem
+      ├── FlashcardItem
+      └── FlashcardItem
+```
+
+User activity is tracked separately:
+
+```text
+User
+ │
+ ▼
+FlashcardVisit
+ │
+ ├── Flashcard Set
+ ├── Optional Card
+ └── Visited At
+```
+
+This separates **learning content** from **user activity**.
+
+---
+
+## Flashcard Flow
+
+```mermaid
+flowchart LR
+
+    USER[Student]
+
+    SET[Flashcard Set]
+
+    CARD[Flashcard Item]
+
+    VISIT[Flashcard Visit]
+
+    DB[(PostgreSQL)]
+
+    USER --> SET
+    SET --> CARD
+
+    USER --> VISIT
+    CARD --> VISIT
+
+    SET --> DB
+    CARD --> DB
+    VISIT --> DB
+```
+
+This design makes it possible to introduce more advanced learning analytics later without modifying the actual flashcard content structure.
+
+---
+
+# 🔐 Security & Authorization
+
+Authentication and authorization are treated as separate concepts.
+
+### Authentication
+
+Answers:
+
+> **Who is the user?**
+
+Handled through Better Auth and Google OAuth.
+
+### Authorization
+
+Answers:
+
+> **What can the user do?**
+
+The system can use application-level roles such as:
+
+```text
+USER
+ADMIN
+```
+
+and community-level roles such as:
+
+```text
+MEMBER
+MODERATOR
+CREATOR
+```
+
+Additional user state can include:
+
+```text
+isOnboarded
+isBlocked
+```
+
+This allows authorization rules to be applied at different levels.
+
+---
+
+# 🧠 Complete User Journey
+
+A typical student's journey through Kotodama can look like:
+
+```text
+                  ┌─────────────────┐
+                  │ Google Login    │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │ Student Profile │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │ University      │
+                  │ Degree / Year   │
+                  │ Semester        │
+                  └────────┬────────┘
+                           │
+               ┌────────────┼────────────┐
+               │            │            │
+               ▼            ▼            ▼
+            Community     Notes          AI
+               │            │            │
+               │            │            ▼
+               │            │        AI Assistance
+               │            │
+               └──────┬─────┘
+                      │
+                      ▼
+                   Practice
+                      │
+              ┌───────┴───────┐
+              ▼               ▼
+            Quiz          Flashcards
+              │               │
+              ▼               ▼
+           Results         Progress
+```
+
+---
+
+# 🔄 Example Learning Workflow
+
+Suppose a student is studying **Machine Learning**.
+
+The student has:
+
+```text
+University : IEM
+Degree     : B.Tech
+Year       : 3rd Year
+Semester   : 6th
+Subject    : Machine Learning
+```
+
+### Step 1 — Find Notes
+
+```text
+Student
+   ↓
+Search Notes
+   ↓
+Filter by academic context
+   ↓
+Machine Learning Notes
+```
+
+### Step 2 — Ask AI
+
+```text
+Student Question
+       ↓
+Chat Context
+       ↓
+Academic Context
+       ↓
+Gemini
+       ↓
+AI Response
+       ↓
+ChatMessage
+```
+
+### Step 3 — Practice Quiz
+
+```text
+Machine Learning Quiz
+        ↓
+Questions
+        ↓
+Quiz Attempt
+        ↓
+Answers
+        ↓
+Score
+        ↓
+Accuracy
+```
+
+### Step 4 — Revise
+
+```text
+Flashcard Set
+      ↓
+Flashcard Items
+      ↓
+Student Interaction
+      ↓
+FlashcardVisit
+```
+
+The different modules therefore form a single learning workflow.
+
+---
+
+# 📐 Core Design Decisions
+
+| Decision | Reason |
+| ---------------------------- | ---------------------------------------------------------------- |
+| **Next.js** | Provides the application and presentation layer in one framework |
+| **React** | Component-based UI architecture |
+| **TypeScript** | Type safety across the application |
+| **Prisma** | Type-safe database access |
+| **PostgreSQL** | Strong relational model for academic and community data |
+| **Better Auth** | Handles authentication and sessions |
+| **Google OAuth** | Simple and secure user authentication |
+| **Gemini** | AI-powered academic assistance |
+| **Sanity CMS** | Separates managed content from transactional application data |
+| **DAL** | Separates database operations from business logic |
+| **Normalized Schema** | Reduces data duplication |
+| **Academic Context** | Enables university/degree/year/semester based personalization |
+| **Separate Activity Models** | Keeps learning content independent from user progress |
+
+---
+
+# 📈 Scalability Considerations
+
+The application layer is designed so that multiple application instances can operate against the same database.
+
+```text
+                    ┌────────────────────┐
+                    │    Load Balancer   │
+                    └─────────┬──────────┘
+                              │
+                ┌─────────────┼─────────────┐
+                │             │             │
+                ▼             ▼             ▼
+          Next.js App    Next.js App    Next.js App
+           Instance 1     Instance 2     Instance 3
+                │             │             │
+                └─────────────┼─────────────┘
+                              │
+                              ▼
+                         PostgreSQL
+```
+
+Future scalability improvements can include:
+
+### Database
+
+- Connection pooling
+- Query optimization
+- Proper indexing
+- Read replicas
+- Database partitioning for large activity tables
+
+### AI
+
+- Response caching
+- Request throttling
+- Streaming responses
+- Model fallback
+- Conversation summarization
+- AI request rate limiting
+
+### Application
+
+- CDN for static assets
+- Background workers
+- Distributed caching
+- API rate limiting
+- Centralized logging
+- Application monitoring
+
+---
+
+# 🔮 Future Architecture Possibilities
+
+The current architecture can be extended without fundamentally changing the existing system.
+
+```text
+Current System
+     │
+     ├── Notes
+     ├── Communities
+     ├── Quiz
+     ├── Flashcards
+     └── AI Chat
+             │
+             ▼
+       Future Extensions
+             │
+     ├── Learning Analytics
+     ├── Recommendation Engine
+     ├── Spaced Repetition
+     ├── AI Study Plans
+     ├── Personalized Quizzes
+     ├── Progress Dashboard
+     └── Collaborative Study
+```
+
+Because the system already separates users, content and user activity, these features can be added without tightly coupling them to existing modules.
+
+---
+
+# 🧱 Overall Architecture Summary
+
+```text
+                         KOTODAMA
+                            │
+                 ┌──────────┴──────────┐
+                 │                     │
+             FRONTEND               BACKEND
+                 │                     │
+          Next.js / React       Server Actions / APIs
+                 │                     │
+                 │              ┌──────┴──────┐
+                 │              │             │
+                 │             Auth          DAL
+                 │              │             │
+                 │              │             ▼
+                 │              │          Prisma
+                 │              │             │
+                 │              │             ▼
+                 │              │        PostgreSQL
+                 │
+                 └──────────────┬──────────────┐
+                                │              │
+                              Gemini         Sanity
+                                │              │
+                                ▼              ▼
+                           AI Learning      Managed
+                           Assistance        Content
+```
+
+The architecture follows a simple principle:
+
+> **Keep the UI, business logic, database operations, and external services loosely coupled.**
+
+This makes Kotodama easier to maintain, extend and scale while keeping the core learning experience centered around the student's academic context.
+
+---
 
 ## 🌐 Deployment
 
