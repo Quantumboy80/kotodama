@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createNote, updateNote, deleteNote } from "@/dal/note/actions";
 import { NoteType } from "@prisma/client";
 import { toast } from "sonner";
+import { useUploadThing } from "@/utils/uploadthing";
 import { Link } from "next-view-transitions";
 import { 
   PlusCircle, 
@@ -98,9 +99,26 @@ export function PersonalNotesClient({
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>("");
   const [year, setYear] = useState<string>("FIRST_YEAR");
   const [semester, setSemester] = useState<string>("FIRST_SEMESTER");
-  const [pdfUrl, setPdfUrl] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [pdfInputMode, setPdfInputMode] = useState<"upload" | "link">("upload");
+
+  const { startUpload, isUploading } = useUploadThing("pdfUploader", {
+    onUploadProgress: (p) => {
+      setUploadProgress(p);
+    },
+    onClientUploadComplete: (res) => {
+      const uploadedFile = res?.[0];
+      if (uploadedFile) {
+        // UploadThing returns url or ufsUrl
+        const fileUrl = (uploadedFile as any).ufsUrl || uploadedFile.url;
+        setPdfUrl(fileUrl);
+        toast.success("PDF uploaded successfully to cloud!");
+      }
+    },
+    onUploadError: (error: Error) => {
+      toast.error(`Upload error: ${error.message}`);
+    },
+  });
 
   const openCreateDialog = () => {
     setEditingNote(null);
@@ -159,28 +177,10 @@ export function PersonalNotesClient({
       return;
     }
 
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const response = await fetch("/api/notes/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || "Failed to upload file");
-      }
-
-      const data = await response.json();
-      setPdfUrl(data.url);
-      toast.success("PDF uploaded successfully!");
+      await startUpload([file]);
     } catch (err: any) {
       toast.error(err.message || "Failed to upload PDF.");
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -585,7 +585,20 @@ export function PersonalNotesClient({
                       </Badge>
                     )}
                   </div>
-                  {isUploading && <p className="text-xs text-muted-foreground animate-pulse">Uploading PDF...</p>}
+                  {isUploading && (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-black dark:text-white">Uploading to cloud...</span>
+                        <span className="text-emerald-600 font-black">{uploadProgress}%</span>
+                      </div>
+                      <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 border border-black overflow-hidden">
+                        <div
+                          className="bg-emerald-500 h-2 transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-2 mt-2">
