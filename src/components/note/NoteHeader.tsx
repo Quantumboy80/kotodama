@@ -24,41 +24,51 @@ export default function NoteHeader({ note }: { note: NoteHeaderProps }) {
         {note.syllabus}
       </p>
       <div className="flex flex-wrap items-center justify-start gap-3">
-        <Badge
-          variant="secondary"
-          className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
-        >
-          <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
-          {getDisplayNameFromSanityValue("university", note.university || "")}
-        </Badge>
-        <Badge
-          variant="secondary"
-          className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
-        >
-          <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
-          {getDisplayNameFromSanityValue("degree", note.degree || "")}
-        </Badge>
-        <Badge
-          variant="secondary"
-          className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
-        >
-          <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
-          {getDisplayNameFromSanityValue("year", note.year || "")}
-        </Badge>
-        <Badge
-          variant="secondary"
-          className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
-        >
-          <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
-          {getDisplayNameFromSanityValue("semester", note.semester || "")}
-        </Badge>
-        <Badge
-          variant="secondary"
-          className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
-        >
-          <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
-          {getTypeDisplayName(note.type || "")}
-        </Badge>
+        {note.university && (
+          <Badge
+            variant="secondary"
+            className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
+          >
+            <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
+            {getDisplayNameFromSanityValue("university", note.university)}
+          </Badge>
+        )}
+        {note.degree && (
+          <Badge
+            variant="secondary"
+            className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
+          >
+            <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
+            {getDisplayNameFromSanityValue("degree", note.degree)}
+          </Badge>
+        )}
+        {note.year && (
+          <Badge
+            variant="secondary"
+            className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
+          >
+            <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
+            {getDisplayNameFromSanityValue("year", note.year)}
+          </Badge>
+        )}
+        {note.semester && (
+          <Badge
+            variant="secondary"
+            className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
+          >
+            <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
+            {getDisplayNameFromSanityValue("semester", note.semester)}
+          </Badge>
+        )}
+        {note.type && (
+          <Badge
+            variant="secondary"
+            className="border-2 border-black bg-white px-3 py-1 font-bold text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#000] dark:border-white/20 dark:bg-zinc-800 dark:text-white dark:shadow-[2px_2px_0px_0px_#757373] dark:hover:shadow-[3px_3px_0px_0px_#757373]"
+          >
+            <GraduationCapIcon className="mr-1.5 h-3.5 w-3.5" />
+            {getTypeDisplayName(note.type)}
+          </Badge>
+        )}
       </div>
     </header>
   );

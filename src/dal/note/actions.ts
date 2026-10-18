@@ -32,6 +32,34 @@ export async function createNote(data: {
     .replace(/(^-|-$)+/g, "");
   const slug = `${baseSlug || "note"}-${Math.random().toString(36).substring(2, 8)}`;
 
+  let uniId = data.universityId || null;
+  let deg = data.degree || null;
+  let yr = data.year || null;
+  let sem = data.semester || null;
+
+  // If universityId is not set (e.g. personal note), try to default from user profile
+  if (!uniId) {
+    try {
+      const profile = await prisma.userProfile.findUnique({
+        where: { userId },
+      });
+      if (profile?.university) {
+        // Find corresponding university entity
+        const uEntity = await prisma.universityEntity.findFirst({
+          where: { name: { equals: profile.university, mode: "insensitive" } },
+        });
+        if (uEntity) {
+          uniId = uEntity.id;
+        }
+      }
+      if (!deg && profile?.degree) deg = profile.degree;
+      if (!yr && profile?.year) yr = profile.year;
+      if (!sem && profile?.semester) sem = profile.semester;
+    } catch {
+      // Ignore profile lookup failure
+    }
+  }
+
   const newNote = await prisma.noteEntity.create({
     data: {
       title: data.title,
@@ -42,10 +70,10 @@ export async function createNote(data: {
       pdfUrl: data.pdfUrl || null,
       authorId: userId,
       communityId: data.communityId || null,
-      universityId: data.universityId || null,
-      degree: data.degree || null,
-      year: data.year || null,
-      semester: data.semester || null,
+      universityId: uniId,
+      degree: deg,
+      year: yr,
+      semester: sem,
       subject: data.subject || null,
     },
   });
