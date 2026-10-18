@@ -55,21 +55,24 @@ export default function TableOfContent({
     );
   };
 
-  // Group headings by H2 sections
+  // Group headings by top-level sections (h1/h2) and subheadings (h3/h4/h5/h6)
   const groupHeadings = (headings: HeadingItem[]): GroupedHeading[] => {
     const grouped: GroupedHeading[] = [];
     let currentH2: GroupedHeading | null = null;
 
     headings.forEach((heading) => {
-      const level = parseInt(heading.style?.slice(1) || "2");
+      const level = parseInt(heading.style?.slice(1) || "2", 10);
 
-      if (level === 2) {
+      if (level <= 2) {
         if (currentH2) {
           grouped.push(currentH2);
         }
         currentH2 = { h2: heading, h3s: [] };
-      } else if (level === 3 && currentH2) {
+      } else if (currentH2) {
         currentH2.h3s.push(heading);
+      } else {
+        // If heading appears before any h1/h2, make it its own group
+        grouped.push({ h2: heading, h3s: [] });
       }
     });
 

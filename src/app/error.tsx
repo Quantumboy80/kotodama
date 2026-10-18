@@ -170,6 +170,12 @@ export default function Error({ error, reset }: ErrorProps) {
             Don&apos;t panic! Our digital notes just had a small hiccup.
             Sometimes even the best systems need a quick refresh.
           </p>
+          {error?.message && (
+            <div className="mt-4 p-3 bg-red-100 dark:bg-red-950/40 border border-red-500 rounded text-red-700 dark:text-red-300 font-mono text-xs text-left overflow-auto max-h-40">
+              <p className="font-bold">{error.name}: {error.message}</p>
+              {error.digest && <p className="text-[10px] text-muted-foreground mt-1">Digest: {error.digest}</p>}
+            </div>
+          )}
         </motion.div>
 
         {/* Fun Fact Box */}

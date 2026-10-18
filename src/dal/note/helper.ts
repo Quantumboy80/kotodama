@@ -115,7 +115,8 @@ function textToPortableText(text: string) {
         _type: "block",
         style: "h4",
         _key: `h4-${i}`,
-        children: [{ _type: "span", text: h4Match[1], marks: [] }]
+        children: [{ _type: "span", text: h4Match[1], marks: [] }],
+        markDefs: [],
       });
       return;
     }
@@ -126,7 +127,8 @@ function textToPortableText(text: string) {
         _type: "block",
         style: "h3",
         _key: `h3-${i}`,
-        children: [{ _type: "span", text: h3Match[1], marks: [] }]
+        children: [{ _type: "span", text: h3Match[1], marks: [] }],
+        markDefs: [],
       });
       return;
     }
@@ -137,7 +139,8 @@ function textToPortableText(text: string) {
         _type: "block",
         style: "h2",
         _key: `h2-${i}`,
-        children: [{ _type: "span", text: h2Match[1], marks: [] }]
+        children: [{ _type: "span", text: h2Match[1], marks: [] }],
+        markDefs: [],
       });
       return;
     }
@@ -148,7 +151,8 @@ function textToPortableText(text: string) {
         _type: "block",
         style: "h1",
         _key: `h1-${i}`,
-        children: [{ _type: "span", text: h1Match[1], marks: [] }]
+        children: [{ _type: "span", text: h1Match[1], marks: [] }],
+        markDefs: [],
       });
       return;
     }
