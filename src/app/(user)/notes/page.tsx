@@ -103,8 +103,8 @@ export default async function NotesPage({
     }
   }
 
-  const dbUniversities = await prisma.universityEntity.findMany();
-  const dbCommunities = await prisma.community.findMany();
+  const dbUniversities = await prisma.universityEntity.findMany().catch(() => []);
+  const dbCommunities = await prisma.community.findMany().catch(() => []);
 
   const filters = {
     search: query,
@@ -117,7 +117,7 @@ export default async function NotesPage({
     type: type === "all" ? undefined : type || "notes",
   };
 
-  const initialNotes = await getFilteredNotes(filters);
+  const initialNotes = await getFilteredNotes(filters).catch(() => []);
 
   const searchParamsForList = {
     query,

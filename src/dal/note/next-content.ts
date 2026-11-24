@@ -43,36 +43,42 @@ export const getNextUnitsAndContent = unstable_cache(
     currentSlug: string,
   ): Promise<NextContentData> => {
     // Get next units from Sanity
-    const [nextUnits, otherContent] = await Promise.all([
-      client.fetch(
-        NEXT_UNITS_QUERY,
-        {
-          university,
-          degree,
-          year,
-          semester,
-          subject,
-          currentSlug,
-        },
-        {
-          next: { revalidate: 1800 }, // 30 minutes
-        },
-      ),
-      client.fetch(
-        SUBJECT_OTHER_CONTENT_QUERY,
-        {
-          university,
-          degree,
-          year,
-          semester,
-          subject,
-          currentSlug,
-        },
-        {
-          next: { revalidate: 1800 }, // 30 minutes
-        },
-      ),
-    ]);
+    let nextUnits: any = [];
+    let otherContent: any = [];
+    try {
+      [nextUnits, otherContent] = await Promise.all([
+        client.fetch(
+          NEXT_UNITS_QUERY,
+          {
+            university,
+            degree,
+            year,
+            semester,
+            subject,
+            currentSlug,
+          },
+          {
+            next: { revalidate: 1800 }, // 30 minutes
+          },
+        ),
+        client.fetch(
+          SUBJECT_OTHER_CONTENT_QUERY,
+          {
+            university,
+            degree,
+            year,
+            semester,
+            subject,
+            currentSlug,
+          },
+          {
+            next: { revalidate: 1800 }, // 30 minutes
+          },
+        ),
+      ]);
+    } catch (e) {
+      console.warn("Failed to fetch next units or other content:", e);
+    }
 
     // Convert Sanity enum values to Prisma enum values
     const prismaUniversity = convertSanityValueToPrismaValue(

@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
 import { getSession } from "@/lib/db/user";
+import { UTApi } from "uploadthing/server";
+
+const token =
+  process.env.UPLOADTHING_TOKEN ||
+  "eyJhcGlLZXkiOiJza19saXZlX2FkOWE4ZmIyOTI5YTNjYjM2Y2Y3MjRjMzA0YmFhMmE2M2U5ZGZjNWUwYzE4M2M2OGU3OTdhNTU3NmEyMDlkMTIiLCJhcHBJZCI6Ijd3eWRzMWQxdHUiLCJyZWdpb25zIjpbInNlYTEiXX0=";
+
+const utapi = new UTApi({ token });
 
 export async function POST(request: Request) {
   try {
@@ -22,25 +27,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Only PDF files are allowed" }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Upload to UploadThing cloud storage
+    const response = await utapi.uploadFiles(file);
 
-    // Create unique filename
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const filename = `${uniqueSuffix}-${sanitizedFilename}`;
+    if (response.error) {
+      return NextResponse.json({ error: response.error.message }, { status: 500 });
+    }
 
-    // Define public path
-    const uploadDir = join(process.cwd(), "public", "uploads");
-    
-    // Ensure upload directory exists
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = join(uploadDir, filename);
-    await writeFile(filePath, buffer);
-
-    const fileUrl = `/uploads/${filename}`;
-
+    const fileUrl = (response.data as any)?.ufsUrl || response.data?.url;
     return NextResponse.json({ url: fileUrl });
   } catch (error: any) {
     console.error("PDF upload error:", error);

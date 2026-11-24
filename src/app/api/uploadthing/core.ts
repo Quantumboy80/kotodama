@@ -3,10 +3,15 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 const f = createUploadthing();
 
 export const ourFileRouter = {
-  pdfUploader: f({ pdf: { maxFileSize: "64MB" } })
+  pdfUploader: f({
+    pdf: {
+      maxFileSize: "64MB",
+      maxFileCount: 1,
+    },
+  })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for url:", file.url);
-      return { uploadedBy: "user", url: file.url };
+      const fileUrl = (file as any).ufsUrl || file.url;
+      return { uploadedBy: "user", url: fileUrl };
     }),
 } satisfies FileRouter;
 

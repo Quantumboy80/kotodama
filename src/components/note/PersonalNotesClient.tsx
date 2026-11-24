@@ -99,6 +99,7 @@ export function PersonalNotesClient({
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>("");
   const [year, setYear] = useState<string>("FIRST_YEAR");
   const [semester, setSemester] = useState<string>("FIRST_SEMESTER");
+  const [pdfUrl, setPdfUrl] = useState<string>("");
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [pdfInputMode, setPdfInputMode] = useState<"upload" | "link">("upload");
 
@@ -109,8 +110,11 @@ export function PersonalNotesClient({
     onClientUploadComplete: (res) => {
       const uploadedFile = res?.[0];
       if (uploadedFile) {
-        // UploadThing returns url or ufsUrl
-        const fileUrl = (uploadedFile as any).ufsUrl || uploadedFile.url;
+        const fileUrl =
+          (uploadedFile as any).ufsUrl ||
+          (uploadedFile as any).url ||
+          (uploadedFile as any).fileUrl ||
+          "";
         setPdfUrl(fileUrl);
         toast.success("PDF uploaded successfully to cloud!");
       }

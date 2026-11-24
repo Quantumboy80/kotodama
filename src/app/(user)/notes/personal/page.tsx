@@ -17,14 +17,21 @@ export default async function PersonalNotesPage() {
 
   const userId = session.user.id;
 
-  // Fetch user's authored notes from DB
-  const notes = await getNotesByAuthor(userId);
-
-  // Fetch communities the user has joined
-  const joinedCommunities = await getUserJoinedCommunities();
-
-  // Fetch all registered universities (for community creation / note classification)
-  const universities = await getAllUniversities();
+  // Fetch user's authored notes from DB, communities, and universities safely
+  const [notes, joinedCommunities, universities] = await Promise.all([
+    getNotesByAuthor(userId).catch((err) => {
+      console.error("Failed to fetch notes by author:", err);
+      return [];
+    }),
+    getUserJoinedCommunities().catch((err) => {
+      console.error("Failed to fetch user joined communities:", err);
+      return [];
+    }),
+    getAllUniversities().catch((err) => {
+      console.error("Failed to fetch universities:", err);
+      return [];
+    }),
+  ]);
 
   return (
     <div className="font-satoshi container mx-auto min-h-screen max-w-6xl px-4 py-8">

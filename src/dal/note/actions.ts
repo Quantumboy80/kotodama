@@ -26,25 +26,43 @@ export async function createNote(data: {
     throw new Error("Unauthorized: You must be logged in to create notes.");
   }
 
-  const baseSlug = data.title
+  const baseSlug = (data.title || "note")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
-  const slug = `${baseSlug || "note"}-${Math.random().toString(36).substring(2, 8)}`;
+  const slug = `${baseSlug || "note"}-${Math.random().toString(36).substring(2, 8)}-${Date.now().toString(36)}`;
 
+  let commId = data.communityId || null;
   let uniId = data.universityId || null;
   let deg = data.degree || null;
   let yr = data.year || null;
   let sem = data.semester || null;
 
-  // If universityId is not set (e.g. personal note), try to default from user profile
+  // Validate communityId if provided
+  if (commId) {
+    try {
+      const comm = await prisma.community.findUnique({
+        where: { id: commId },
+        select: { id: true, universityId: true, degree: true },
+      });
+      if (comm) {
+        if (!uniId) uniId = comm.universityId;
+        if (!deg) deg = comm.degree;
+      } else {
+        commId = null;
+      }
+    } catch {
+      commId = null;
+    }
+  }
+
+  // If universityId is not set, try to default from user profile
   if (!uniId) {
     try {
       const profile = await prisma.userProfile.findUnique({
         where: { userId },
       });
       if (profile?.university) {
-        // Find corresponding university entity
         const uEntity = await prisma.universityEntity.findFirst({
           where: { name: { equals: profile.university, mode: "insensitive" } },
         });
@@ -60,26 +78,47 @@ export async function createNote(data: {
     }
   }
 
-  const newNote = await prisma.noteEntity.create({
-    data: {
-      title: data.title,
-      slug,
-      syllabus: data.syllabus || "",
-      content: data.content,
-      type: data.type,
-      pdfUrl: data.pdfUrl || null,
-      authorId: userId,
-      communityId: data.communityId || null,
-      universityId: uniId,
-      degree: deg,
-      year: yr,
-      semester: sem,
-      subject: data.subject || null,
-    },
-  });
+  // Double-check universityId exists in DB to prevent foreign key errors
+  if (uniId) {
+    try {
+      const uExists = await prisma.universityEntity.findUnique({
+        where: { id: uniId },
+        select: { id: true },
+      });
+      if (!uExists) {
+        uniId = null;
+      }
+    } catch {
+      uniId = null;
+    }
+  }
 
-  revalidatePath("/notes");
-  return newNote;
+  try {
+    const newNote = await prisma.noteEntity.create({
+      data: {
+        title: data.title,
+        slug,
+        syllabus: data.syllabus || "",
+        content: data.content,
+        type: data.type || "NOTES",
+        pdfUrl: data.pdfUrl || null,
+        authorId: userId,
+        communityId: commId,
+        universityId: uniId,
+        degree: deg,
+        year: yr,
+        semester: sem,
+        subject: data.subject || null,
+      },
+    });
+
+    revalidatePath("/notes");
+    revalidatePath("/notes/personal");
+    return newNote;
+  } catch (err: any) {
+    console.error("Failed to create note in database:", err);
+    throw new Error(err.message || "Failed to create note. Please check inputs.");
+  }
 }
 
 /**
@@ -114,19 +153,25 @@ export async function updateNote(
     throw new Error("Forbidden: You can only edit your own notes.");
   }
 
-  const updatedNote = await prisma.noteEntity.update({
-    where: { id },
-    data: {
-      title: data.title,
-      syllabus: data.syllabus,
-      content: data.content,
-      type: data.type,
-      pdfUrl: data.pdfUrl,
-    },
-  });
+  try {
+    const updatedNote = await prisma.noteEntity.update({
+      where: { id },
+      data: {
+        title: data.title,
+        syllabus: data.syllabus,
+        content: data.content,
+        type: data.type,
+        pdfUrl: data.pdfUrl,
+      },
+    });
 
-  revalidatePath("/notes");
-  return updatedNote;
+    revalidatePath("/notes");
+    revalidatePath("/notes/personal");
+    return updatedNote;
+  } catch (err: any) {
+    console.error("Failed to update note:", err);
+    throw new Error(err.message || "Failed to update note.");
+  }
 }
 
 /**
@@ -152,10 +197,16 @@ export async function deleteNote(id: string) {
     throw new Error("Forbidden: You can only delete your own notes.");
   }
 
-  await prisma.noteEntity.delete({
-    where: { id },
-  });
+  try {
+    await prisma.noteEntity.delete({
+      where: { id },
+    });
 
-  revalidatePath("/notes");
-  return { success: true };
+    revalidatePath("/notes");
+    revalidatePath("/notes/personal");
+    return { success: true };
+  } catch (err: any) {
+    console.error("Failed to delete note:", err);
+    throw new Error(err.message || "Failed to delete note.");
+  }
 }

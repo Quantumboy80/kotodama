@@ -201,26 +201,33 @@ function mapDbNoteToSanityNote(note: any) {
 }
 
 export const getNoteBySlug = async (slug: string) => {
-  const note = await prisma.noteEntity.findUnique({
-    where: { slug },
-    include: {
-      university: true,
-      author: true,
-    },
-  });
+  try {
+    const note = await prisma.noteEntity.findUnique({
+      where: { slug },
+      include: {
+        university: true,
+        author: true,
+      },
+    });
 
-  const mapped = mapDbNoteToSanityNote(note);
-  if (!mapped) return null;
-  
-  // Extract headings for Table of Contents
-  const headings = mapped.content.filter((b: any) =>
-    ["h2", "h3", "h4", "h5", "h6"].includes(b.style)
-  );
+    const mapped = mapDbNoteToSanityNote(note);
+    if (!mapped) return null;
+    
+    // Extract headings for Table of Contents
+    const headings = Array.isArray(mapped.content)
+      ? mapped.content.filter((b: any) =>
+          ["h2", "h3", "h4", "h5", "h6"].includes(b.style)
+        )
+      : [];
 
-  return {
-    ...mapped,
-    headings,
-  };
+    return {
+      ...mapped,
+      headings,
+    };
+  } catch (error) {
+    console.error("Error in getNoteBySlug:", error);
+    return null;
+  }
 };
 
 // Get all available subjects based on filters

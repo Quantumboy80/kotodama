@@ -135,9 +135,10 @@ export default async function NotePage({
   }
 
   if (note.isPremium) {
+    const tier = (note.tier as PremiumTier) || PremiumTier.TIER_1;
     const accessStatus = await checkUserAccessToContent(
       session.user.id,
-      note.tier as PremiumTier,
+      tier,
       note.university,
       note.degree,
       note.year,
